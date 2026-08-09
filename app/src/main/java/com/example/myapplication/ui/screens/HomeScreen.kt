@@ -1,0 +1,171 @@
+package com.example.myapplication.ui.screens
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import android.util.Log
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+import com.example.myapplication.data.Person
+import com.example.myapplication.ui.MainViewModel
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HomeScreen(
+    viewModel: MainViewModel,
+    onAddPerson: () -> Unit,
+    onEditPerson: (Int) -> Unit,
+    onAutomate: (Int, String, String) -> Unit,
+    onSettings: () -> Unit
+) {
+    val persons by viewModel.persons.collectAsState()
+    var showAutomationDialog by remember { mutableStateOf(false) }
+    var selectedPersonId by remember { mutableIntStateOf(-1) }
+    var dailyPassCode by remember { mutableStateOf("") }
+    var visitType by remember { mutableStateOf("Free Trial") }
+
+    if (showAutomationDialog) {
+        AlertDialog(
+            onDismissRequest = { showAutomationDialog = false },
+            title = { Text("Automation Details") },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    OutlinedTextField(
+                        value = dailyPassCode,
+                        onValueChange = { dailyPassCode = it },
+                        label = { Text("Daily Pass Code") },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text("Visit Type")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        RadioButton(selected = visitType == "Free Trial", onClick = { visitType = "Free Trial" })
+                        Text("Free Trial")
+                        Spacer(modifier = Modifier.width(16.dp))
+                        RadioButton(selected = visitType == "VIP Guest", onClick = { visitType = "VIP Guest" })
+                        Text("VIP Guest")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    Log.d("HomeScreen", "Start button clicked. personId: $selectedPersonId, code: $dailyPassCode, type: $visitType")
+                    showAutomationDialog = false
+                    onAutomate(selectedPersonId, dailyPassCode, visitType)
+                }) {
+                    Text("Start")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { 
+                    Log.d("HomeScreen", "Cancel button clicked")
+                    showAutomationDialog = false 
+                }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("World Gym") },
+                actions = {
+                    IconButton(onClick = onSettings) {
+                        Icon(Icons.Default.Settings, contentDescription = "Settings")
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onAddPerson,
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Add Person")
+            }
+        }
+    ) { padding ->
+        if (persons.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = "No profiles found",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Text(
+                        text = "Tap + to add a guest profile",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(persons) { person ->
+                    PersonItem(
+                        person = person,
+                        onEdit = { onEditPerson(person.id) },
+                        onAutomate = {
+                            selectedPersonId = person.id
+                            showAutomationDialog = true
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PersonItem(
+    person: Person,
+    onEdit: () -> Unit,
+    onAutomate: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(text = person.profileName, style = MaterialTheme.typography.titleLarge)
+            Text(text = "${person.firstName} ${person.lastName}", style = MaterialTheme.typography.bodyMedium)
+            Text(text = person.email, style = MaterialTheme.typography.bodySmall)
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = onEdit) {
+                    Text("Edit")
+                }
+                Button(onClick = onAutomate) {
+                    Text("Automate")
+                }
+            }
+        }
+    }
+}
