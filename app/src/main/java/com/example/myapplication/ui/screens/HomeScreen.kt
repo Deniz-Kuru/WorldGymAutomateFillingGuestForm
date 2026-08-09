@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,7 +9,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import android.util.Log
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -56,7 +56,7 @@ fun HomeScreen(
                         Log.d("HomeScreen", "Start button clicked. personId: $selectedPersonId, code: $dailyPassCode, type: $visitType")
                         showAutomationDialog = false
                         onAutomate(selectedPersonId, dailyPassCode, visitType)
-                    }
+                    },
                 ) {
                     Text("Start")
                 }
@@ -67,58 +67,58 @@ fun HomeScreen(
                         Log.d("HomeScreen", "Cancel button clicked")
                         showAutomationDialog = false 
                     },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
                 ) {
                     Text("Cancel")
                 }
-            }
+            },
         )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Non-official World Gym Guest form automation") },
+                title = { Text("Non-official gym Guest form automation") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
                 actions = {
                     IconButton(onClick = onSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
                     }
-                }
+                },
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddPerson,
                 containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
+                contentColor = MaterialTheme.colorScheme.onPrimary,
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Person")
             }
-        }
+        },
     ) { padding ->
         if (persons.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
                         text = "No profiles found",
                         style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.onBackground
+                        color = MaterialTheme.colorScheme.onBackground,
                     )
                     Text(
                         text = "Tap + to add a guest profile",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     )
                 }
             }
@@ -128,7 +128,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(padding),
                 contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 items(persons) { person ->
                     PersonItem(
@@ -156,7 +156,7 @@ fun VisitTypeDropdown(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { expanded = !expanded },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         OutlinedTextField(
             value = selectedType,
@@ -167,12 +167,12 @@ fun VisitTypeDropdown(
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
             modifier = Modifier
                 .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         )
 
         ExposedDropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             types.forEach { type ->
                 DropdownMenuItem(
@@ -181,7 +181,7 @@ fun VisitTypeDropdown(
                         onTypeSelected(type)
                         expanded = false
                     },
-                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
                 )
             }
         }
@@ -192,30 +192,29 @@ fun VisitTypeDropdown(
 fun PersonItem(
     person: Person,
     onEdit: () -> Unit,
-    onAutomate: () -> Unit
+    onAutomate: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
-            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
-            Text(text = person.profileName, style = MaterialTheme.typography.titleLarge)
-            Text(text = "${person.firstName} ${person.lastName}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = person.email, style = MaterialTheme.typography.bodySmall)
+            Text(text = "${person.firstName} ${person.lastName}", style = MaterialTheme.typography.titleLarge)
+            Text(text = person.email, style = MaterialTheme.typography.bodyMedium)
             
             Spacer(modifier = Modifier.height(8.dp))
             
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End
+                horizontalArrangement = Arrangement.End,
             ) {
                 TextButton(onClick = onEdit) {
                     Text("Edit")

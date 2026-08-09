@@ -21,7 +21,6 @@ fun EditPersonScreen(
     personId: Int?,
     onNavigateBack: () -> Unit,
 ) {
-    var profileName by remember { mutableStateOf("") }
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -39,7 +38,6 @@ fun EditPersonScreen(
         if ((personId != null) && (personId != -1)) {
             val person = viewModel.getPersonById(personId)
             person?.let {
-                profileName = it.profileName
                 firstName = it.firstName
                 lastName = it.lastName
                 email = it.email
@@ -82,7 +80,6 @@ fun EditPersonScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            OutlinedTextField(value = profileName, onValueChange = { profileName = it }, label = { Text("Profile Name") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = firstName, onValueChange = { firstName = it }, label = { Text("First Name") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = lastName, onValueChange = { lastName = it }, label = { Text("Last Name") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = email, onValueChange = { email = it }, label = { Text("Email") }, modifier = Modifier.fillMaxWidth(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email))
@@ -112,8 +109,7 @@ fun EditPersonScreen(
             Button(
                 onClick = {
                     val person = Person(
-                        id = if (personId == null || personId == -1) 0 else personId,
-                        profileName = profileName,
+                        id = if (personId == null || (personId == -1)) 0 else personId,
                         firstName = firstName,
                         lastName = lastName,
                         email = email,
@@ -125,22 +121,21 @@ fun EditPersonScreen(
                         stateProv = stateProv,
                         postalCode = postalCode,
                         phone = phone,
-                        preferredGymId = preferredGymId
+                        preferredGymId = preferredGymId,
                     )
                     viewModel.savePerson(person)
                     onNavigateBack()
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 Text("Save")
             }
 
-            if (personId != null && personId != -1) {
+            if ((personId != null) && (personId != -1)) {
                 TextButton(
                     onClick = {
                         val person = Person(
                             id = personId,
-                            profileName = profileName,
                             firstName = firstName,
                             lastName = lastName,
                             email = email,
@@ -152,7 +147,7 @@ fun EditPersonScreen(
                             stateProv = stateProv,
                             postalCode = postalCode,
                             phone = phone,
-                            preferredGymId = preferredGymId
+                            preferredGymId = preferredGymId,
                         )
                         viewModel.deletePerson(person)
                         onNavigateBack()

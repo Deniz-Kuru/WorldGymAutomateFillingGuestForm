@@ -35,7 +35,7 @@ fun AutomationScreen(
         if (person == null) {
             Log.e("AutomationScreen", "Person not found for id: $personId")
         } else {
-            Log.d("AutomationScreen", "Person fetched: ${person?.profileName}")
+            Log.d("AutomationScreen", "Person fetched: ${person?.firstName} ${person?.lastName}")
         }
     }
 
@@ -165,10 +165,10 @@ fun AutomationWebView(
                                                 if (!value) return;
                                                 var el = document.getElementById(id);
                                                 if (!el) {
-                                                    console.error('Element with ID ' + id + ' not found');
+                                                    console.warn('Element with ID ' + id + ' not found');
                                                     return;
                                                 }
-                                                console.log('Typing into ' + id + ': ' + value);
+                                                console.log('Typing into ' + id);
                                                 el.value = '';
                                                 var i = 0;
                                                 function type() {

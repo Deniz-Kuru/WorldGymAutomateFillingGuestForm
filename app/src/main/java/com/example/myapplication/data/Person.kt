@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "persons")
 data class Person(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val profileName: String,
     val firstName: String,
     val lastName: String,
     val email: String,
@@ -18,5 +17,5 @@ data class Person(
     val stateProv: String,
     val postalCode: String,
     val phone: String,
-    val preferredGymId: String
+    val preferredGymId: String,
 )
