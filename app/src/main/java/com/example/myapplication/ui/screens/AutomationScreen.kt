@@ -24,7 +24,7 @@ fun AutomationScreen(
     personId: Int,
     dailyPassCode: String,
     visitType: String,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     var person by remember { mutableStateOf<Person?>(null) }
     val vipCardNumber by viewModel.vipCardNumber.collectAsState()
@@ -47,7 +47,7 @@ fun AutomationScreen(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
@@ -86,7 +86,7 @@ fun AutomationWebView(
 ) {
     val url = "https://www.ggpx.info/GuestReg"
     var step by remember { mutableIntStateOf(1) }
-    var isLoading by remember { mutableStateOf(true) }
+    var isLoading by remember { mutableStateOf(value = true) }
 
     Box(modifier = modifier) {
         AndroidView(
@@ -107,7 +107,7 @@ fun AutomationWebView(
                     webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(consoleMessage: ConsoleMessage?): Boolean {
                             consoleMessage?.let {
-                                Log.d("AutomationWebView JS", "${it.message()}")
+                                Log.d("AutomationWebView JS", it.message())
                             }
                             return true
                         }
@@ -248,9 +248,10 @@ fun AutomationWebView(
                     }
                     loadUrl(url)
                 }
-            },
-            update = { /* Keep empty */ }
-        )
+            }
+        ) {
+            // Keep empty
+        }
 
         if (isLoading) {
             LinearProgressIndicator(

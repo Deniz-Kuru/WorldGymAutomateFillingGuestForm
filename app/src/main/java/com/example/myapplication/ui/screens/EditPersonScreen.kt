@@ -5,7 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -13,16 +13,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.data.Person
 import com.example.myapplication.ui.MainViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPersonScreen(
     viewModel: MainViewModel,
     personId: Int?,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
-    val scope = rememberCoroutineScope()
     var profileName by remember { mutableStateOf("") }
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
@@ -38,7 +36,7 @@ fun EditPersonScreen(
     var preferredGymId by remember { mutableStateOf("") }
 
     LaunchedEffect(personId) {
-        if (personId != null && personId != -1) {
+        if ((personId != null) && (personId != -1)) {
             val person = viewModel.getPersonById(personId)
             person?.let {
                 profileName = it.profileName
@@ -61,16 +59,16 @@ fun EditPersonScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(if (personId == null || personId == -1) "Add Person" else "Edit Person") },
+                title = { Text(if ((personId == null) || (personId == -1)) "Add Person" else "Edit Person") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
-                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
                 ),
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -107,8 +105,9 @@ fun EditPersonScreen(
             
             GymDropdown(
                 selectedGymId = preferredGymId,
-                onGymSelected = { preferredGymId = it }
-            )
+            ) {
+                preferredGymId = it
+            }
 
             Button(
                 onClick = {
@@ -172,7 +171,7 @@ fun EditPersonScreen(
 @Composable
 fun GymDropdown(
     selectedGymId: String,
-    onGymSelected: (String) -> Unit
+    onGymSelected: (String) -> Unit,
 ) {
     val gyms = listOf(
         "1" to "Gatineau",
@@ -190,7 +189,7 @@ fun GymDropdown(
         "13" to "Saint-Jérôme"
     )
 
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(value = false) }
     val selectedGymName = gyms.find { it.first == selectedGymId }?.second ?: ""
 
     ExposedDropdownMenuBox(
@@ -205,7 +204,9 @@ fun GymDropdown(
             label = { Text("Preferred Gym") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth()
         )
 
         ExposedDropdownMenu(

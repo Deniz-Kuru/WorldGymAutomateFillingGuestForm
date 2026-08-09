@@ -22,10 +22,10 @@ fun HomeScreen(
     onAddPerson: () -> Unit,
     onEditPerson: (Int) -> Unit,
     onAutomate: (Int, String, String) -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
 ) {
     val persons by viewModel.persons.collectAsState()
-    var showAutomationDialog by remember { mutableStateOf(false) }
+    var showAutomationDialog by remember { mutableStateOf(value = false) }
     var selectedPersonId by remember { mutableIntStateOf(-1) }
     var dailyPassCode by remember { mutableStateOf("") }
     var visitType by remember { mutableStateOf("VIP Guest") }
@@ -40,21 +40,24 @@ fun HomeScreen(
                         value = dailyPassCode,
                         onValueChange = { dailyPassCode = it },
                         label = { Text("Daily Pass Code") },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     
                     VisitTypeDropdown(
                         selectedType = visitType,
-                        onTypeSelected = { visitType = it }
-                    )
+                    ) {
+                        visitType = it
+                    }
                 }
             },
             confirmButton = {
-                Button(onClick = {
-                    Log.d("HomeScreen", "Start button clicked. personId: $selectedPersonId, code: $dailyPassCode, type: $visitType")
-                    showAutomationDialog = false
-                    onAutomate(selectedPersonId, dailyPassCode, visitType)
-                }) {
+                Button(
+                    onClick = {
+                        Log.d("HomeScreen", "Start button clicked. personId: $selectedPersonId, code: $dailyPassCode, type: $visitType")
+                        showAutomationDialog = false
+                        onAutomate(selectedPersonId, dailyPassCode, visitType)
+                    }
+                ) {
                     Text("Start")
                 }
             },
@@ -131,11 +134,10 @@ fun HomeScreen(
                     PersonItem(
                         person = person,
                         onEdit = { onEditPerson(person.id) },
-                        onAutomate = {
-                            selectedPersonId = person.id
-                            showAutomationDialog = true
-                        }
-                    )
+                    ) {
+                        selectedPersonId = person.id
+                        showAutomationDialog = true
+                    }
                 }
             }
         }
@@ -146,10 +148,10 @@ fun HomeScreen(
 @Composable
 fun VisitTypeDropdown(
     selectedType: String,
-    onTypeSelected: (String) -> Unit
+    onTypeSelected: (String) -> Unit,
 ) {
     val types = listOf("Free Trial", "VIP Guest")
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(value = false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -163,7 +165,9 @@ fun VisitTypeDropdown(
             label = { Text("Visit Type") },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
-            modifier = Modifier.menuAnchor().fillMaxWidth()
+            modifier = Modifier
+                .menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth()
         )
 
         ExposedDropdownMenu(

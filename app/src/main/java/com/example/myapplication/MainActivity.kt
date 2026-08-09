@@ -63,18 +63,18 @@ fun MainNavigation(viewModel: MainViewModel) {
                     Log.d("MainActivity", "Route: $route")
                     navController.navigate(route) 
                 },
-                onSettings = { navController.navigate("settings") }
+                onSettings = { navController.navigate("settings") },
             )
         }
         composable(
             route = "edit_person/{personId}",
-            arguments = listOf(navArgument("personId") { type = NavType.IntType })
+            arguments = listOf(navArgument("personId") { type = NavType.IntType }),
         ) { backStackEntry ->
             val personId = backStackEntry.arguments?.getInt("personId")
             EditPersonScreen(
                 viewModel = viewModel,
                 personId = personId,
-                onNavigateBack = { navController.popBackStack() }
+                onNavigateBack = { navController.popBackStack() },
             )
         }
         composable("settings") {
