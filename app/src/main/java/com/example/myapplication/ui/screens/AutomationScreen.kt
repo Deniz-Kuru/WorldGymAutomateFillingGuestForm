@@ -235,12 +235,21 @@ fun AutomationWebView(
                                             
                                             var btnSubmit = document.getElementById('btnSubmit');
                                             if (btnSubmit) {
-                                                console.log('Scrolling submit button into view');
-                                                btnSubmit.scrollIntoView();
+                                                // Wait 2.5 seconds for typing to finish before scrolling and submitting
+                                                setTimeout(function() {
+                                                    console.log('Scrolling and auto-clicking submit button');
+                                                    btnSubmit.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                                    
+                                                    // Small additional delay after scroll for visual clarity
+                                                    setTimeout(function() {
+                                                        btnSubmit.click();
+                                                    }, 500);
+                                                }, 1000);
                                             }
                                         })();
                                     """.trimIndent()
 
+                                    step = 3
                                     view?.evaluateJavascript(js, null)
                                 }
                             }
