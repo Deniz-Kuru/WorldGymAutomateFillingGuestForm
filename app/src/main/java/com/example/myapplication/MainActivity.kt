@@ -88,7 +88,7 @@ fun MainNavigation(viewModel: MainViewModel) {
             arguments = listOf(
                 navArgument("personId") { type = NavType.IntType },
                 navArgument("dailyPassCode") { type = NavType.StringType; defaultValue = "" },
-                navArgument("visitType") { type = NavType.StringType; defaultValue = "Free Trial" }
+                navArgument("visitType") { type = NavType.StringType; defaultValue = "VIP Guest" }
             )
         ) { backStackEntry ->
             val personId = backStackEntry.arguments?.getInt("personId") ?: -1

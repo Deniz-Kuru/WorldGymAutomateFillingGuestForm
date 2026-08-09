@@ -121,20 +121,27 @@ fun AutomationWebView(
 
                             if (url?.lowercase()?.contains("guestreg") == true) {
                                 if (step == 1) {
-                                    Log.d("AutomationWebView", "Injecting Step 1 JS")
+                                    Log.d("AutomationWebView", "Injecting Step 1 JS for gymId: ${person.preferredGymId}")
                                     val safeGymId = person.preferredGymId.replace("'", "\\'")
                                     val js = """
                                         (function() {
                                             console.log('Step 1: Gym Selection Starting');
-                                            var gymDropdown = document.getElementById('GymID');
+                                            var gymDropdown = document.getElementById('GymID') || document.getElementById('ddlGym');
                                             var gymId = '$safeGymId';
                                             if (gymDropdown && gymId) {
+                                                console.log('Setting GymID to: ' + gymId);
                                                 gymDropdown.value = gymId;
                                                 gymDropdown.dispatchEvent(new Event('change', { bubbles: true }));
                                                 var btnSubmitGym = document.getElementById('btnSubmitGym');
                                                 if (btnSubmitGym) {
+                                                    console.log('Clicking btnSubmitGym');
                                                     btnSubmitGym.click();
+                                                    return;
                                                 }
+                                            }
+                                            if (document.getElementById('FirstName') || document.getElementById('RegCode')) {
+                                                console.log('Already on Step 2. Moving step counter.');
+                                                // Trigger logic for step 2 if elements exist
                                             }
                                         })();
                                     """.trimIndent()
@@ -143,54 +150,88 @@ fun AutomationWebView(
                                     view?.evaluateJavascript(js, null)
                                 } else if (step == 2) {
                                     Log.d("AutomationWebView", "Injecting Step 2 JS")
-
                                     val passType = if (visitType == "Free Trial") "GPC" else "GVM"
-                                    val promoCode = if (passType == "GVM") vipCardNumber else ""
-
-                                    // Inject direct synchronous DOM population
                                     val js = """
                                         (function() {
-                                            console.log('Step 2: Main Form Filling');
+                                            console.log('Step 2: Main Form Filling Starting');
                                             
-                                            function fill(id, val) {
+                                            function typeInto(id, value) {
+                                                if (!value) return;
                                                 var el = document.getElementById(id);
-                                                if (el && val) {
-                                                    el.value = val;
-                                                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                                                if (!el) {
+                                                    console.error('Element with ID ' + id + ' not found');
+                                                    return;
+                                                }
+                                                console.log('Typing into ' + id + ': ' + value);
+                                                el.value = '';
+                                                var i = 0;
+                                                function type() {
+                                                    if (i < value.length) {
+                                                        el.value += value.charAt(i);
+                                                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                                                        i++;
+                                                        setTimeout(type, 30);
+                                                    } else {
+                                                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                                                        console.log('Finished typing into ' + id);
+                                                    }
+                                                }
+                                                type();
+                                            }
+
+                                            function check(id) {
+                                                var el = document.getElementById(id);
+                                                if (el) {
+                                                    console.log('Checking checkbox: ' + id);
+                                                    el.checked = true;
                                                     el.dispatchEvent(new Event('change', { bubbles: true }));
                                                 }
                                             }
-                                            
-                                            function check(id) {
-                                                var el = document.getElementById(id);
-                                                if (el) el.checked = true;
+
+                                            // 1. Visit Type Selection
+                                            var guestPassType = document.getElementById('GuestPassType');
+                                            if (guestPassType) {
+                                                console.log('Setting Visit Type to: $passType');
+                                                guestPassType.value = '$passType';
+                                                guestPassType.dispatchEvent(new Event('change', { bubbles: true }));
+                                                if (typeof EnableDisablePromoCode === 'function') {
+                                                    EnableDisablePromoCode();
+                                                }
                                             }
 
-                                            fill('RegCode', '${dailyPassCode.replace("'", "\\'")}');
-                                            fill('FirstName', '${person.firstName.replace("'", "\\'")}');
-                                            fill('LastName', '${person.lastName.replace("'", "\\'")}');
-                                            fill('Email', '${person.email.replace("'", "\\'")}');
-                                            fill('YearOfBirth', '${if (person.yearOfBirth > 0) person.yearOfBirth.toString() else ""}');
-                                            fill('StreetAddress', '${person.address.replace("'", "\\'")}');
-                                            fill('Appartment', '${person.apartment.replace("'", "\\'")}');
-                                            fill('City', '${person.city.replace("'", "\\'")}');
-                                            fill('StateProv', '${person.stateProv.replace("'", "\\'")}');
-                                            fill('PostalCode', '${person.postalCode.replace("'", "\\'")}');
-                                            fill('PhoneMobile', '${person.phone.replace("'", "\\'")}');
+                                            // 2. Typing Simulator
+                                            typeInto('RegCode', '${dailyPassCode.replace("'", "\\'")}');
+                                            typeInto('FirstName', '${person.firstName.replace("'", "\\'")}');
+                                            typeInto('LastName', '${person.lastName.replace("'", "\\'")}');
+                                            typeInto('Email', '${person.email.replace("'", "\\'")}');
+                                            typeInto('YearOfBirth', '${if (person.yearOfBirth > 0) person.yearOfBirth.toString() else ""}');
+                                            typeInto('StreetAddress', '${person.address.replace("'", "\\'")}');
+                                            typeInto('Appartment', '${person.apartment.replace("'", "\\'")}');
+                                            typeInto('City', '${person.city.replace("'", "\\'")}');
+                                            typeInto('StateProv', '${person.stateProv.replace("'", "\\'")}');
+                                            typeInto('PostalCode', '${person.postalCode.replace("'", "\\'")}');
+                                            typeInto('PhoneMobile', '${person.phone.replace("'", "\\'")}');
                                             
                                             if ('${person.gender}' === 'M') check('GenderM');
                                             else if ('${person.gender}' === 'F') check('GenderF');
                                             
-                                            fill('GuestPassType', '$passType');
-                                            if ('$promoCode') fill('PromoCode', '$promoCode');
+                                            // 3. VIP / Reference Number
+                                            if ('$vipCardNumber') {
+                                                console.log('Filling PromoCode field');
+                                                typeInto('PromoCode', '$vipCardNumber');
+                                            }
                                             
+                                            // 4. Agreements
                                             check('GuestServicesAgreement1');
                                             check('GuestServicesAgreement2');
                                             check('GuestServicesAgreement3');
                                             check('Agreement');
                                             
                                             var btnSubmit = document.getElementById('btnSubmit');
-                                            if (btnSubmit) btnSubmit.scrollIntoView();
+                                            if (btnSubmit) {
+                                                console.log('Scrolling submit button into view');
+                                                btnSubmit.scrollIntoView();
+                                            }
                                         })();
                                     """.trimIndent()
 
@@ -202,14 +243,12 @@ fun AutomationWebView(
                     loadUrl(url)
                 }
             },
-            update = { /* Keep empty to prevent re-triggering url loads during recomposition */ }
+            update = { /* Keep empty */ }
         )
 
         if (isLoading) {
             LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(androidx.compose.ui.Alignment.TopCenter)
+                modifier = Modifier.fillMaxWidth().align(androidx.compose.ui.Alignment.TopCenter)
             )
         }
     }

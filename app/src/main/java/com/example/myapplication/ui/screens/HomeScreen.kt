@@ -28,7 +28,7 @@ fun HomeScreen(
     var showAutomationDialog by remember { mutableStateOf(false) }
     var selectedPersonId by remember { mutableIntStateOf(-1) }
     var dailyPassCode by remember { mutableStateOf("") }
-    var visitType by remember { mutableStateOf("Free Trial") }
+    var visitType by remember { mutableStateOf("VIP Guest") }
 
     if (showAutomationDialog) {
         AlertDialog(
@@ -42,14 +42,11 @@ fun HomeScreen(
                         label = { Text("Daily Pass Code") },
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text("Visit Type")
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(selected = visitType == "Free Trial", onClick = { visitType = "Free Trial" })
-                        Text("Free Trial")
-                        Spacer(modifier = Modifier.width(16.dp))
-                        RadioButton(selected = visitType == "VIP Guest", onClick = { visitType = "VIP Guest" })
-                        Text("VIP Guest")
-                    }
+                    
+                    VisitTypeDropdown(
+                        selectedType = visitType,
+                        onTypeSelected = { visitType = it }
+                    )
                 }
             },
             confirmButton = {
@@ -129,6 +126,48 @@ fun HomeScreen(
                         }
                     )
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VisitTypeDropdown(
+    selectedType: String,
+    onTypeSelected: (String) -> Unit
+) {
+    val types = listOf("Free Trial", "VIP Guest")
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedType,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Visit Type") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            types.forEach { type ->
+                DropdownMenuItem(
+                    text = { Text(type) },
+                    onClick = {
+                        onTypeSelected(type)
+                        expanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
             }
         }
     }

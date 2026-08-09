@@ -98,7 +98,11 @@ fun EditPersonScreen(
             OutlinedTextField(value = stateProv, onValueChange = { stateProv = it }, label = { Text("State/Province") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = postalCode, onValueChange = { postalCode = it }, label = { Text("Postal Code") }, modifier = Modifier.fillMaxWidth())
             OutlinedTextField(value = phone, onValueChange = { phone = it }, label = { Text("Phone") }, modifier = Modifier.fillMaxWidth(), keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone))
-            OutlinedTextField(value = preferredGymId, onValueChange = { preferredGymId = it }, label = { Text("Preferred Gym ID") }, modifier = Modifier.fillMaxWidth())
+            
+            GymDropdown(
+                selectedGymId = preferredGymId,
+                onGymSelected = { preferredGymId = it }
+            )
 
             Button(
                 onClick = {
@@ -153,6 +157,64 @@ fun EditPersonScreen(
                 ) {
                     Text("Delete")
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun GymDropdown(
+    selectedGymId: String,
+    onGymSelected: (String) -> Unit
+) {
+    val gyms = listOf(
+        "1" to "Gatineau",
+        "2" to "Montréal (Plateau)",
+        "3" to "Québec (Lebourgneuf)",
+        "4" to "Québec (Ste-Foy)",
+        "5" to "Sherbrooke",
+        "6" to "Trois-Rivières",
+        "7" to "Beauceville",
+        "8" to "Brossard",
+        "9" to "Chicoutimi",
+        "10" to "Drummondville",
+        "11" to "Joliette",
+        "12" to "Laval",
+        "13" to "Saint-Jérôme"
+    )
+
+    var expanded by remember { mutableStateOf(false) }
+    val selectedGymName = gyms.find { it.first == selectedGymId }?.second ?: ""
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        OutlinedTextField(
+            value = selectedGymName,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text("Preferred Gym") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+            modifier = Modifier.menuAnchor().fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            gyms.forEach { gym ->
+                DropdownMenuItem(
+                    text = { Text(gym.second) },
+                    onClick = {
+                        onGymSelected(gym.first)
+                        expanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
             }
         }
     }
