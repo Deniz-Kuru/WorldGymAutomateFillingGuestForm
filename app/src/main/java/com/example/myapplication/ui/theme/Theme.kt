@@ -9,36 +9,42 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val WorldGymColorScheme = darkColorScheme(
+    primary = WorldGymRed,
+    onPrimary = WorldGymWhite,
+    primaryContainer = WorldGymDarkRed,
+    onPrimaryContainer = WorldGymWhite,
+    
+    secondary = WorldGymGray,
+    onSecondary = WorldGymWhite,
+    secondaryContainer = WorldGymLightGray,
+    onSecondaryContainer = WorldGymWhite,
+    
+    background = WorldGymBlack,
+    onBackground = WorldGymWhite,
+    
+    surface = WorldGymBlack,
+    onSurface = WorldGymWhite,
+    surfaceVariant = WorldGymGray,
+    onSurfaceVariant = WorldGymWhite,
+    
+    outline = WorldGymRed,
+    error = WorldGymRed,
+    onError = WorldGymWhite
 )
 
 @Composable
 fun MyApplicationTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
+    // Dynamic color is disabled to keep the World Gym branding consistent
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    // We use the same WorldGymColorScheme for both to ensure consistent branding (Black/Red/White)
+    val colorScheme = WorldGymColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

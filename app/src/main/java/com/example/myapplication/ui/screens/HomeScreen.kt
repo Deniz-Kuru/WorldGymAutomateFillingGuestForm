@@ -59,10 +59,13 @@ fun HomeScreen(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { 
-                    Log.d("HomeScreen", "Cancel button clicked")
-                    showAutomationDialog = false 
-                }) {
+                TextButton(
+                    onClick = { 
+                        Log.d("HomeScreen", "Cancel button clicked")
+                        showAutomationDialog = false 
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary)
+                ) {
                     Text("Cancel")
                 }
             }
@@ -72,7 +75,13 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("World Gym") },
+                title = { Text("Non-official World Gym Guest form automation") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary
+                ),
                 actions = {
                     IconButton(onClick = onSettings) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")
@@ -83,6 +92,8 @@ fun HomeScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddPerson,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Add Person")
             }
@@ -181,6 +192,10 @@ fun PersonItem(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
@@ -202,7 +217,7 @@ fun PersonItem(
                     Text("Edit")
                 }
                 Button(onClick = onAutomate) {
-                    Text("Automate")
+                    Text("Fill the Form")
                 }
             }
         }
