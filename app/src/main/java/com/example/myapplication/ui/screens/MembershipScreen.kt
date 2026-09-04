@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.set
 import com.example.myapplication.ui.MainViewModel
 import com.google.zxing.BarcodeFormat
@@ -114,7 +115,7 @@ fun generateBarcode(text: String, width: Int, height: Int): Bitmap? {
             width,
             height
         )
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val bitmap = createBitmap(width, height, Bitmap.Config.ARGB_8888)
         for (x in 0 until width) {
             for (y in 0 until height) {
                 bitmap[x, y] = if (bitMatrix[x, y]) Color.BLACK else Color.WHITE
