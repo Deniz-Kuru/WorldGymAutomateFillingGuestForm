@@ -6,6 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.data.Person
 import com.example.myapplication.ui.MainViewModel
+import com.example.myapplication.ui.components.OCRScanner
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,6 +31,17 @@ fun HomeScreen(
     var selectedPersonId by remember { mutableIntStateOf(-1) }
     var dailyPassCode by remember { mutableStateOf("") }
     var visitType by remember { mutableStateOf("VIP Guest") }
+    var showOCRScanner by remember { mutableStateOf(false) }
+
+    if (showOCRScanner) {
+        OCRScanner(
+            onTextDetected = { 
+                dailyPassCode = it
+                showOCRScanner = false
+            },
+            onDismiss = { showOCRScanner = false }
+        )
+    }
 
     if (showAutomationDialog) {
         AlertDialog(
@@ -38,7 +51,7 @@ fun HomeScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
                         value = dailyPassCode,
-                        onValueChange = { dailyPassCode = it },
+                        onValueChange = { dailyPassCode = it.uppercase() },
                         label = { Text("Daily Pass Code") },
                         modifier = Modifier.fillMaxWidth(),
                     )
@@ -51,14 +64,29 @@ fun HomeScreen(
                 }
             },
             confirmButton = {
-                Button(
-                    onClick = {
-                        Log.d("HomeScreen", "Start button clicked. personId: $selectedPersonId, code: $dailyPassCode, type: $visitType")
-                        showAutomationDialog = false
-                        onAutomate(selectedPersonId, dailyPassCode, visitType)
-                    },
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Start")
+                    IconButton(onClick = { showOCRScanner = true }) {
+                        Icon(
+                            Icons.Default.PhotoCamera,
+                            contentDescription = "Scan Passcode",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    Button(
+                        onClick = {
+                            Log.d("HomeScreen", "Start button clicked. personId: $selectedPersonId, code: $dailyPassCode, type: $visitType")
+                            showAutomationDialog = false
+                            onAutomate(selectedPersonId, dailyPassCode, visitType)
+                        },
+                    ) {
+                        Text("Start")
+                    }
                 }
             },
             dismissButton = {
