@@ -52,8 +52,8 @@ class MainActivity : ComponentActivity() {
 fun MainScreen(viewModel: MainViewModel) {
     val navController = rememberNavController()
     val items = listOf(
-        Screen.Guest,
-        Screen.Membership
+        Screen.Membership,
+        Screen.Guest
     )
 
     Scaffold(
@@ -96,20 +96,26 @@ fun MainScreen(viewModel: MainViewModel) {
             }
         }
     ) { innerPadding ->
-        MainNavigation(viewModel, navController, Modifier.padding(innerPadding))
+        // Use only the bottom padding from the scaffold to avoid double-padding at the top
+        // (Status bar padding is handled by the TopAppBar in the child screens)
+        MainNavigation(
+            viewModel, 
+            navController, 
+            Modifier.padding(bottom = innerPadding.calculateBottomPadding())
+        )
     }
 }
 
 sealed class Screen(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    object Guest : Screen("guest", "Guest", Icons.Default.Group)
     object Membership : Screen("membership", "Membership", Icons.Default.CreditCard)
+    object Guest : Screen("guest", "Guest", Icons.Default.Group)
 }
 
 @Composable
 fun MainNavigation(viewModel: MainViewModel, navController: androidx.navigation.NavHostController, modifier: Modifier = Modifier) {
     NavHost(
         navController = navController, 
-        startDestination = Screen.Guest.route,
+        startDestination = Screen.Membership.route,
         modifier = modifier
     ) {
         composable(Screen.Guest.route) {

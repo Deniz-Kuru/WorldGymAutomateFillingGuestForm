@@ -46,7 +46,7 @@ fun HomeScreen(
     if (showAutomationDialog) {
         AlertDialog(
             onDismissRequest = { showAutomationDialog = false },
-            title = { Text("Automation Details") },
+            title = { Text("Details") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
@@ -66,17 +66,29 @@ fun HomeScreen(
             confirmButton = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     IconButton(onClick = { showOCRScanner = true }) {
                         Icon(
                             Icons.Default.PhotoCamera,
                             contentDescription = "Scan Passcode",
-                            tint = MaterialTheme.colorScheme.primary
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                     
                     Spacer(modifier = Modifier.weight(1f))
+
+                    TextButton(
+                        onClick = { 
+                            Log.d("HomeScreen", "Cancel button clicked")
+                            showAutomationDialog = false 
+                        },
+                        colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
+                    ) {
+                        Text("Cancel")
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
 
                     Button(
                         onClick = {
@@ -89,24 +101,13 @@ fun HomeScreen(
                     }
                 }
             },
-            dismissButton = {
-                TextButton(
-                    onClick = { 
-                        Log.d("HomeScreen", "Cancel button clicked")
-                        showAutomationDialog = false 
-                    },
-                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.primary),
-                ) {
-                    Text("Cancel")
-                }
-            },
         )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Non-official gym Guest form automation") },
+                title = { Text("Guest form automation") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
