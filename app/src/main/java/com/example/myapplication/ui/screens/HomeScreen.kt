@@ -48,7 +48,10 @@ fun HomeScreen(
             onDismissRequest = { showAutomationDialog = false },
             title = { Text("Details") },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier.imePadding(),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     OutlinedTextField(
                         value = dailyPassCode,
                         onValueChange = { dailyPassCode = it.uppercase() },

@@ -76,6 +76,7 @@ fun EditPersonScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .imePadding()
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -158,6 +159,9 @@ fun EditPersonScreen(
                     Text("Delete")
                 }
             }
+            
+            // Buffer space for keyboard
+            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
